@@ -1,12 +1,13 @@
-FROM centos:7
+FROM adoptopenjdk/openjdk8-openj9:jdk8u232-b09_openj9-0.17.0-debian
 
-RUN yum install -y java-1.8.0-openjdk-devel.x86_64 unzip gettext nmap-ncat openssl, which gnupg, telnet \
- && yum clean all -y
-
-# FROM openjdk:8-jdk
-# RUN apt-get update && apt-get install -y --no-install-recommends \
-#		bash libapr1 unzip telnet wget gnupg ca-certificates \
-#	&& rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        ca-certificates \
+        gnupg \
+        libapr1 \
+        telnet \
+        unzip \
+        wget \
+	&& rm -rf /var/lib/apt/lists/*
 
 ARG user=rocketmq
 ARG group=rocketmq
