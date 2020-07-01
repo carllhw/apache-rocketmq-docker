@@ -23,22 +23,23 @@ RUN groupadd -g ${gid} ${group} \
 ARG version
 
 # Rocketmq version
-ENV ROCKETMQ_VERSION 4.6.0
-
+ENV ROCKETMQ_VERSION 4.6.1
 # Rocketmq home
 ENV ROCKETMQ_HOME  /home/rocketmq/rocketmq-${ROCKETMQ_VERSION}
 
 WORKDIR  ${ROCKETMQ_HOME}
 
-RUN curl https://archive.apache.org/dist/rocketmq/${ROCKETMQ_VERSION}/rocketmq-all-${ROCKETMQ_VERSION}-bin-release.zip -o rocketmq.zip \
-    && curl https://archive.apache.org/dist/rocketmq/${ROCKETMQ_VERSION}/rocketmq-all-${ROCKETMQ_VERSION}-bin-release.zip.asc -o rocketmq.zip.asc \
-    && curl https://downloads.apache.org/rocketmq/KEYS -o KEYS \
-    && gpg --import KEYS \
-    && gpg --batch --verify rocketmq.zip.asc rocketmq.zip \
+RUN set -eux \
+    && curl https://archive.apache.org/dist/rocketmq/${ROCKETMQ_VERSION}/rocketmq-all-${ROCKETMQ_VERSION}-bin-release.zip -o rocketmq.zip \
+    # && curl https://archive.apache.org/dist/rocketmq/${ROCKETMQ_VERSION}/rocketmq-all-${ROCKETMQ_VERSION}-bin-release.zip.asc -o rocketmq.zip.asc \
+    # && curl -L https://www.apache.org/dist/rocketmq/KEYS -o KEYS \
+    # && gpg --import KEYS \
+    # && gpg --batch --verify rocketmq.zip.asc rocketmq.zip \
     && unzip rocketmq.zip \
     && mv rocketmq-all*/* . \
     && rmdir rocketmq-all*  \
-    && rm rocketmq.zip rocketmq.zip.asc KEYS
+    # && rm rocketmq.zip rocketmq.zip.asc KEYS
+    && rm rocketmq.zip
 
 # add scripts
 COPY scripts/ ${ROCKETMQ_HOME}/bin/
