@@ -1,13 +1,13 @@
-FROM adoptopenjdk/openjdk8-openj9:jdk8u232-b09_openj9-0.17.0-debian
+FROM adoptopenjdk/openjdk8-openj9:jdk8u252-b09_openj9-0.20.0-debian
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        ca-certificates \
-        gnupg \
-        libapr1 \
-        telnet \
-        unzip \
-        wget \
-	&& rm -rf /var/lib/apt/lists/*
+    ca-certificates \
+    gnupg \
+    libapr1 \
+    telnet \
+    unzip \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
 
 ARG user=rocketmq
 ARG group=rocketmq
@@ -30,18 +30,15 @@ ENV ROCKETMQ_HOME  /home/rocketmq/rocketmq-${ROCKETMQ_VERSION}
 
 WORKDIR  ${ROCKETMQ_HOME}
 
-RUN set -eux; \
-    curl https://archive.apache.org/dist/rocketmq/${ROCKETMQ_VERSION}/rocketmq-all-${ROCKETMQ_VERSION}-bin-release.zip -o rocketmq.zip; \
-    curl https://archive.apache.org/dist/rocketmq/${ROCKETMQ_VERSION}/rocketmq-all-${ROCKETMQ_VERSION}-bin-release.zip.asc -o rocketmq.zip.asc; \
-    #https://www.apache.org/dist/rocketmq/KEYS
-	curl https://www.apache.org/dist/rocketmq/KEYS -o KEYS; \
-	\
-	gpg --import KEYS; \
-    gpg --batch --verify rocketmq.zip.asc rocketmq.zip ; \
-    unzip rocketmq.zip ; \
-	mv rocketmq-all*/* . ; \
-	rmdir rocketmq-all*  ; \
-	rm rocketmq.zip rocketmq.zip.asc KEYS
+RUN curl https://archive.apache.org/dist/rocketmq/${ROCKETMQ_VERSION}/rocketmq-all-${ROCKETMQ_VERSION}-bin-release.zip -o rocketmq.zip \
+    && curl https://archive.apache.org/dist/rocketmq/${ROCKETMQ_VERSION}/rocketmq-all-${ROCKETMQ_VERSION}-bin-release.zip.asc -o rocketmq.zip.asc \
+    && curl https://downloads.apache.org/rocketmq/KEYS -o KEYS \
+    && gpg --import KEYS \
+    && gpg --batch --verify rocketmq.zip.asc rocketmq.zip \
+    && unzip rocketmq.zip \
+    && mv rocketmq-all*/* . \
+    && rmdir rocketmq-all*  \
+    && rm rocketmq.zip rocketmq.zip.asc KEYS
 
 # add scripts
 COPY scripts/ ${ROCKETMQ_HOME}/bin/
@@ -53,16 +50,16 @@ EXPOSE 9876
 
 # add customized scripts for namesrv
 RUN mv ${ROCKETMQ_HOME}/bin/runserver-customize.sh ${ROCKETMQ_HOME}/bin/runserver.sh \
- && chmod a+x ${ROCKETMQ_HOME}/bin/runserver.sh \
- && chmod a+x ${ROCKETMQ_HOME}/bin/mqnamesrv
+    && chmod a+x ${ROCKETMQ_HOME}/bin/runserver.sh \
+    && chmod a+x ${ROCKETMQ_HOME}/bin/mqnamesrv
 
 # expose broker ports
 EXPOSE 10909 10911 10912
 
 # add customized scripts for broker
 RUN mv ${ROCKETMQ_HOME}/bin/runbroker-customize.sh ${ROCKETMQ_HOME}/bin/runbroker.sh \
- && chmod a+x ${ROCKETMQ_HOME}/bin/runbroker.sh \
- && chmod a+x ${ROCKETMQ_HOME}/bin/mqbroker
+    && chmod a+x ${ROCKETMQ_HOME}/bin/runbroker.sh \
+    && chmod a+x ${ROCKETMQ_HOME}/bin/mqbroker
 
 # export Java options
 RUN export JAVA_OPT=" -Duser.home=/opt"
